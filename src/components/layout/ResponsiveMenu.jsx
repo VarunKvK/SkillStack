@@ -18,7 +18,7 @@ const ResponsiveMenu = ({ userData, status }) => {
   console.log(userData);
   const { setTheme } = useTheme()
   return (
-    <div>
+    <div className="block md:hidden">
       <DropdownMenu>
         <DropdownMenuTrigger>
           <Menu />
