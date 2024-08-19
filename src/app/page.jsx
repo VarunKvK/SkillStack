@@ -1,6 +1,7 @@
 "use client"
 
 import AboutSection from "@/components/layout/AboutSection";
+import FeatureSection from "@/components/layout/FeatureSection";
 import Header from "@/components/layout/Header";
 import { MainSection } from "@/components/layout/MainSection";
 import { useSession } from "next-auth/react";
@@ -13,6 +14,7 @@ export default function Home() {
       <Header session={session} status={status}/>
       <MainSection/>
       <AboutSection/>
+      <FeatureSection/>
     </div>
   );
 }

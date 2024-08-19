@@ -18,6 +18,7 @@ const AboutSection = () => {
         track your growth, SkillStack helps you showcase your skills in a
         compelling, data-driven way.
       </p>
+      
       </div>
     </div>
   );
