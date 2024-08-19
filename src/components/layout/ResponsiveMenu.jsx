@@ -15,7 +15,6 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 
 const ResponsiveMenu = ({ userData, status }) => {
-  console.log(userData);
   const { setTheme } = useTheme();
   return (
     <div className="block md:hidden">
