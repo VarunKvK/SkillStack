@@ -23,11 +23,11 @@ export function MainSection() {
           <FlipWords words={words} className={"font-semibold"} />
           <br />
           <span className="md:leading-2 leading-[0.1rem] opacity-90">
-            <span className="md:text-[3.5rem] text-[1.8rem] px-4 ">
+            <span className="md:text-[3.5rem] text-[1.6rem] px-4 sm:text-[2rem]">
               your professional growth
             </span>
             <br />
-            <span className="md:text-[3.5rem] text-[1.8rem] px-4">
+            <span className="md:text-[3.5rem] text-[1.6rem] px-4 sm:text-[2rem]">
               with skillstack
             </span>
           </span>
