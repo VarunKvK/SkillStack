@@ -67,3 +67,15 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* <DropdownMenuSeparator className="bg-[#e4e4e4]"/> 
+  <DropdownMenuContent className="bg-[#f1f1f1] dark:bg-[#1e1e1e] dark:border-none">
+  <Button variant={"outline"}  className="bg-[#eaeaea] dark:bg-[#1b1b1b] dark:border-none w-full" onClick={() => signIn()}>SignIn</Button>
+
+
+
+
+
+
+
+*/

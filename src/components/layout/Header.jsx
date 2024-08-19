@@ -9,10 +9,10 @@ import NavbarMenu from './NavbarMenu'
 export default function Header() {
   const { data: session, status } = useSession()
   return (
-    <header className="p-4 backdrop-blur-sm">
+    <header className="px-6 py-4 backdrop-blur-sm">
       <nav className="flex justify-between items-center">
-        <Link href="/" className="text-black text-2xl font-bold font-anek">SkillStack</Link>
-        <NavbarMenu userData={session} status={status}/>
+        <Link href="/" className="text-black dark:text-white text-2xl font-bold font-anek">SkillStack</Link>
+        <NavbarMenu  userData={session} status={status}/>
         <ResponsiveMenu userData={session} status={status}/>
       </nav>
     </header>

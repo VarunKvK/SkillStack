@@ -16,47 +16,73 @@ import { useTheme } from "next-themes";
 
 const ResponsiveMenu = ({ userData, status }) => {
   console.log(userData);
-  const { setTheme } = useTheme()
+  const { setTheme } = useTheme();
   return (
     <div className="block md:hidden">
       <DropdownMenu>
         <DropdownMenuTrigger>
           <Menu />
         </DropdownMenuTrigger>
-        <DropdownMenuContent>
+        <DropdownMenuContent className="mr-4 bg-[#f1f1f1] dark:bg-[#000] dark:border-[#1d1d1d]">
           {!userData ? (
             <DropdownMenuLabel>
-            <Button variant={"outline"} className="w-full" onClick={() => signIn()}>SignIn</Button>
+              <Button
+                variant={"outline"}
+                className="bg-[#e2fd6c] dark:border-[#1d1d1d] text-[#000] w-full"
+                onClick={() => signIn()}
+              >
+                SignIn
+              </Button>
             </DropdownMenuLabel>
           ) : (
             <DropdownMenuLabel>Hello {userData}</DropdownMenuLabel>
           )}
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>
+          <DropdownMenuSeparator className="bg-[#e4e4e4] dark:bg-[#1d1d1d]" />
+          <DropdownMenuItem className="focus:bg-[#f1f1f1] focus:dark:bg-[#000]">
             <Link href={"/dashboard"}>Profile</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem className="focus:bg-[#f1f1f1] focus:dark:bg-[#000]">
             <Link href={"/projects"}>Projects</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem className="focus:bg-[#f1f1f1] focus:dark:bg-[#000]">
             <Link href={"/skills"}>Skills</Link>
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
+          <DropdownMenuSeparator className="bg-[#e4e4e4] dark:bg-[#1d1d1d]" />
           <div className="flex items-center gap-1.5">
-            <Button variant={"outline"} className="w-full" onClick={() => setTheme("dark")}>
-                <Moon className="w-4"/>
+            <Button
+              variant={"outline"}
+              className="w-full bg-[#eaeaea] dark:bg-[#000] dark:border-[#1d1d1d]"
+              onClick={() => setTheme("dark")}
+            >
+              <Moon className="w-4" />
             </Button>
-            <Button variant={"outline"} className="w-full" onClick={() => setTheme("light")}>
-                <Sun className="w-4"/>
+            <Button
+              variant={"outline"}
+              className="w-full bg-[#eaeaea] dark:bg-[#000] dark:border-[#1d1d1d] "
+              onClick={() => setTheme("light")}
+            >
+              <Sun className="w-4" />
             </Button>
-            <Button variant={"outline"} className="w-full" onClick={() => setTheme("default")}>
-                <MonitorCog className="w-4"/>
+            <Button
+              variant={"outline"}
+              className="w-full bg-[#eaeaea] dark:bg-[#000] dark:border-[#1d1d1d] "
+              onClick={() => setTheme("default")}
+            >
+              <MonitorCog className="w-4" />
             </Button>
           </div>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <Button variant={"outline"} className="bg-red-100 border border-red-200 text-red-400 w-full" onClick={() => signOut()}>Logout</Button>
-          </DropdownMenuItem>
+          {userData && (
+            <DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-[#e4e4e4] dark:bg-[#000]" />
+              <Button
+                variant={"outline"}
+                className="bg-[#fd6c6c] text-white dark:border-[#1d1d1d] w-full"
+                onClick={() => signOut()}
+              >
+                Logout
+              </Button>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
