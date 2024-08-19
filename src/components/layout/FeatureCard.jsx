@@ -39,8 +39,8 @@ export function CanvasReveal() {
   return (
     <>
       <div className="max-w-6xl py-20 flex flex-col md:grid md:grid-cols-2 lg:flex-row lg:flex items-center justify-center bg-white dark:bg-black w-full gap-4 mx-auto px-8">
-        {feature_data.map((f,key)=>(
-        <Card title={f.title} icon={f.icon} description={f.description}>
+        {feature_data.map((f,index)=>(
+        <Card title={f.title} icon={f.icon} description={f.description} key={index}>
           <CanvasRevealEffect
             animationSpeed={5.1}
             containerClassName={f.bg}
