@@ -3,8 +3,10 @@
 import AboutSection from "@/components/layout/AboutSection";
 import CTASection from "@/components/layout/CTASection";
 import FeatureSection from "@/components/layout/FeatureSection";
+import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 import { MainSection } from "@/components/layout/MainSection";
+import MyMockups from "@/components/layout/MyMockups";
 import WorkSection from "@/components/layout/WorkSection";
 import { useSession } from "next-auth/react";
 
@@ -19,6 +21,8 @@ export default function Home() {
       <FeatureSection/>
       <WorkSection/>
       <CTASection/>
+      <MyMockups/>
+      <Footer/>
     </div>
   );
 }
