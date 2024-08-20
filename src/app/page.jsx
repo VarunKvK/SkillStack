@@ -1,9 +1,11 @@
 "use client"
 
 import AboutSection from "@/components/layout/AboutSection";
+import CTASection from "@/components/layout/CTASection";
 import FeatureSection from "@/components/layout/FeatureSection";
 import Header from "@/components/layout/Header";
 import { MainSection } from "@/components/layout/MainSection";
+import WorkSection from "@/components/layout/WorkSection";
 import { useSession } from "next-auth/react";
 
 // [#e2fd6c]
@@ -15,6 +17,8 @@ export default function Home() {
       <MainSection/>
       <AboutSection/>
       <FeatureSection/>
+      <WorkSection/>
+      <CTASection/>
     </div>
   );
 }
