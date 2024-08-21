@@ -11,16 +11,17 @@ import WorkSection from "@/components/layout/WorkSection";
 import { useSession } from "next-auth/react";
 
 // [#e2fd6c]
+// bg-[#e2fd6c] border hover:border-[#dcff41] text-[#000] hover:text-white hover:bg-black
 export default function Home() {
   const { data: session, status } = useSession()
   return (
     <div className="h-screen font-anek bg-white dark:bg-[#000]">
       <Header session={session} status={status}/>
-      <MainSection/>
+      <MainSection session={session} status={status}/>
       <AboutSection/>
       <FeatureSection/>
       <WorkSection/>
-      <CTASection/>
+      <CTASection session={session} status={status}/>
       <MyMockups/>
       <Footer/>
     </div>

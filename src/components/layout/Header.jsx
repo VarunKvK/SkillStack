@@ -11,7 +11,7 @@ export default function Header({session,status}) {
     <header className="max-w-6xl mx-auto px-4 py-4 backdrop-blur-sm">
       <nav className="flex justify-between items-center">
         <Link href="/" className="text-black dark:text-white text-2xl font-bold font-anek">SkillStack</Link>
-        <NavbarMenu  userData={session} status={status}/>
+        <NavbarMenu userData={session} status={status}/>
         <ResponsiveMenu userData={session} status={status}/>
       </nav>
     </header>
