@@ -3,12 +3,12 @@
 import { GlobalLoader } from "@/components/layout/GlobalLoader";
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
 import { useSession } from "next-auth/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Textarea } from "@/components/ui/textarea"
 
 
 const Projects = () => {
   const { status } = useSession();
-
   if (status === "loading") {
     return <GlobalLoader loading={true} />;
   }
@@ -25,7 +25,7 @@ const Projects = () => {
             required graphs for you.
           </p>
         </div>
-        <div className="w-full">
+        <div className="w-full relative">
           <Placeholder/>
         </div>
       </div>
@@ -35,6 +35,7 @@ const Projects = () => {
 
 const Placeholder=()=>{
   const [text,setText]=useState()
+
   const placeholders = [
     "Tell us about that cool app you built. What did it do? How'd you make it?",
     "Remember that time you fixed a tricky bug? What happened?",
@@ -44,20 +45,32 @@ const Placeholder=()=>{
   ];
  
   const handleChange = (e) => {
-    console.log(e.target.value);
     setText(e.target.value)
   };
-  const onSubmit = (e) => {
+  const onSubmit = async(e) => {
     e.preventDefault();
-    console.log(text);
+    try {
+      const response = await fetch('/api/analysis', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ projectDescription: text }),
+      });
+      const data = await response.json();
+      console.log('Analysis:', data);
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
   return (
-    <div className="h-[10rem] flex flex-col items-start">
+    <div className="flex flex-col items-center justify-center w-full">
       <PlaceholdersAndVanishInput
         placeholders={placeholders}
         onChange={handleChange}
         onSubmit={onSubmit}
       />
+      {/* <Textarea onChange={handleChange} className="bg-black text-white border-[#e2fd6c] w-[80%] focus:border-none" placeholder="Type."/> */}
     </div>
   );
 }

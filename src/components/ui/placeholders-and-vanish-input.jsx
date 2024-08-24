@@ -3,11 +3,13 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { Textarea } from "./textarea";
+import { Button } from "./button";
 
 export function PlaceholdersAndVanishInput({
   placeholders,
   onChange,
-  onSubmit,
+  onSubmit
 }) {
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
 
@@ -20,10 +22,10 @@ export function PlaceholdersAndVanishInput({
 
   const handleVisibilityChange = () => {
     if (document.visibilityState !== "visible" && intervalRef.current) {
-      clearInterval(intervalRef.current); // Clear the interval when the tab is not visible
+      clearInterval(intervalRef.current);
       intervalRef.current = null;
     } else if (document.visibilityState === "visible") {
-      startAnimation(); // Restart the interval when the tab becomes visible
+      startAnimation();
     }
   };
 
@@ -45,8 +47,7 @@ export function PlaceholdersAndVanishInput({
   const [value, setValue] = useState("");
   const [animating, setAnimating] = useState(false);
   const [height, setHeight] = useState("48px"); // Initial height
-  const [borderRadius, setBorderRadius] = useState("9999px"); // Full border radius
-  const [overflow, setOverflow] = useState("hidden"); // Manage overflow visibility
+  const [borderRadius, setBorderRadius] = useState("9999px"); // Rounded border for small input
 
   const draw = useCallback(() => {
     if (!inputRef.current) return;
@@ -143,7 +144,7 @@ export function PlaceholdersAndVanishInput({
         } else {
           setValue("");
           setAnimating(false);
-          resetHeightOverflowAndBorder(); // Reset after animation completes
+          resetHeightAndBorder();
         }
       });
     };
@@ -181,25 +182,18 @@ export function PlaceholdersAndVanishInput({
       setValue(e.target.value);
       onChange && onChange(e);
 
-      // Adjust the height of the textarea based on content
       const textarea = e.target;
-      textarea.style.height = "auto";
-      textarea.style.height = `${textarea.scrollHeight}px`;
-      setHeight(textarea.style.height);
+      textarea.style.height = "auto"; // Reset the height to auto to calculate the scrollHeight correctly
+      textarea.style.height = `${textarea.scrollHeight}px`; // Set the height based on the scrollHeight
 
-      // Adjust the border-radius and overflow based on the height
-      const newRadius = parseInt(textarea.style.height) > 48 ? "16px" : "9999px";
-      setBorderRadius(newRadius);
-      setOverflow(parseInt(textarea.style.height) > 48 ? "auto" : "hidden");
+      // Adjust border radius based on the height
+      setHeight(textarea.style.height);
     }
   };
 
-  const resetHeightOverflowAndBorder = () => {
+  const resetHeightAndBorder = () => {
     setHeight("48px");
-    setBorderRadius("9999px");
-    setOverflow("hidden");
 
-    // Scroll back to the top
     if (inputRef.current) {
       inputRef.current.scrollTop = 0;
     }
@@ -208,10 +202,9 @@ export function PlaceholdersAndVanishInput({
   return (
     <form
       className={cn(
-        "w-full relative max-w-xl mx-auto bg-white dark:bg-zinc-800 overflow-hidden shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] transition duration-200",
+        "rounded-lg w-full relative max-w-xl mx-auto bg-white dark:bg-zinc-800 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] transition duration-200",
         value && "bg-gray-50"
       )}
-      style={{ borderRadius }}
       onSubmit={handleSubmit}
     >
       <canvas
@@ -221,23 +214,21 @@ export function PlaceholdersAndVanishInput({
         )}
         ref={canvasRef}
       />
-      <textarea
+      <Textarea
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
         ref={inputRef}
         value={value}
-        type="text"
         className={cn(
-          "w-full relative text-sm sm:text-base z-50 border-none dark:text-white bg-transparent text-black h-full focus:outline-none focus:ring-0 p-4 md:pl-10 resize-none overflow-" +
-            overflow,
+          "w-full relative text-sm sm:text-base z-50 border-none dark:text-white bg-transparent text-black h-full focus:outline-none focus:ring-0",
           animating && "text-transparent dark:text-transparent"
         )}
-        style={{ height }}
+        style={{ height }} // Set the dynamic height
       />
-       <button
+      <Button
         disabled={!value}
         type="submit"
-        className="absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full disabled:bg-gray-100 bg-black dark:bg-zinc-900 dark:disabled:bg-zinc-800 transition duration-200 flex items-center justify-center"
+        className="absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full transition duration-200 flex items-center justify-center"
       >
         <motion.svg
           xmlns="http://www.w3.org/2000/svg"
@@ -269,20 +260,29 @@ export function PlaceholdersAndVanishInput({
           <path d="M13 18l6 -6" />
           <path d="M13 6l6 6" />
         </motion.svg>
-      </button>
-      <div className="absolute inset-0 flex items-center pointer-events-none">
+      </Button>
+      <div className="absolute inset-0 flex mt-3 pointer-events-none">
         <AnimatePresence mode="wait">
           {!value && (
             <motion.p
-              initial={{ y: 5, opacity: 0 }}
+              initial={{
+                y: 5,
+                opacity: 0,
+              }}
               key={`current-placeholder-${currentPlaceholder}`}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -15, opacity: 0 }}
+              animate={{
+                y: 0,
+                opacity: 1,
+              }}
+              exit={{
+                y: -15,
+                opacity: 0,
+              }}
               transition={{
                 duration: 0.3,
                 ease: "linear",
               }}
-              className="dark:text-zinc-500 text-sm sm:text-base font-normal text-neutral-500 pl-4 sm:pl-12 text-left w-[calc(100%-2rem)] truncate"
+              className="dark:text-zinc-500 text-sm sm:text-base font-normal text-neutral-500 pl-4 sm:pl-4 text-left w-[calc(100%-2rem)] truncate"
             >
               {placeholders[currentPlaceholder]}
             </motion.p>
