@@ -13,10 +13,11 @@ import { Button } from "../ui/button";
 import { signIn, signOut } from "next-auth/react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
 
 const ResponsiveMenu = ({ userData, status }) => {
   const { setTheme } = useTheme();
-  console.log(userData)
+  const router= useRouter()
   return (
     <nav className="block md:hidden">
       <DropdownMenu>
@@ -31,7 +32,7 @@ const ResponsiveMenu = ({ userData, status }) => {
               <Button
                 variant="outline"
                 className="bg-[#e2fd6c] dark:border-[#1d1d1d] text-black w-full"
-                onClick={signIn}
+                onClick={()=>router.push("/signin")}
               >
                 Sign In
               </Button>

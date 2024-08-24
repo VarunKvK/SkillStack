@@ -10,15 +10,15 @@ export default function SignIn() {
     <div className="bg-white dark:bg-black flex justify-center items-center h-screen w-full">
       <Tabs defaultValue="Login" className="p-4 rounded-md">
         <TabsList className="bg-white dark:bg-black w-full">
-          <TabsTrigger value="Login" className="dark:text-white text-black text-lg px-8 rounded-md">
+          <TabsTrigger value="Login" className="dark:text-white text-black md:text-lg px-8 rounded-md">
             Login
           </TabsTrigger>
-          <TabsTrigger value="Register" className="dark:text-white text-black text-lg px-8 rounded-md">
+          <TabsTrigger value="Register" className="dark:text-white text-black md:text-lg px-8 rounded-md">
             Register
           </TabsTrigger>
         </TabsList>
         <TabsContent value="Login" className="mt-8">
-          <h1 className="text-4xl font-medium">
+          <h1 className="text-4xl font-medium text-center">
             Welcome back to
             <span className="text-[#e2fd6c] font-semibold"> SkillStack</span>
           </h1>
