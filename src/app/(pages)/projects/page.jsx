@@ -131,7 +131,7 @@ const ResultContainer = ({ data, skills }) => {
             <h2 className="opacity-50">Skills Identified</h2>
             <div className="flex flex-wrap gap-1">
               {s.projectInsights.skills.map((s, index) => (
-                <Badge variant={"outline"} className="flex gap-2">
+                <Badge variant={"outline"} key={index} className="flex gap-2">
                   <span>{s.name}</span>
                 </Badge>
               ))}

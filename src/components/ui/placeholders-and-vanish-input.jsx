@@ -42,32 +42,34 @@ export function PlaceholdersAndVanishInput({
   });
 
   const intervalRef = useRef(null);
-  const startAnimation = () => {
-    intervalRef.current = setInterval(() => {
-      setCurrentPlaceholder((prev) => (prev + 1) % placeholders.length);
-    }, 3000);
-  };
-
-  const handleVisibilityChange = () => {
-    if (document.visibilityState !== "visible" && intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    } else if (document.visibilityState === "visible") {
-      startAnimation();
-    }
-  };
-
+  
   useEffect(() => {
+    const startAnimation = useCallback(() => {
+      intervalRef.current = setInterval(() => {
+        setCurrentPlaceholder((prev) => (prev + 1) % placeholders.length);
+      }, 3000);
+    }, [placeholders]);
+  
+    const handleVisibilityChange = useCallback(() => {
+      if (document.visibilityState !== "visible" && intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      } else if (document.visibilityState === "visible") {
+        startAnimation();
+      }
+    }, [startAnimation]);
+  
     startAnimation();
     document.addEventListener("visibilitychange", handleVisibilityChange);
-
+  
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [placeholders]);
+  }, [placeholders, startAnimation, handleVisibilityChange]);
+  
 
   const canvasRef = useRef(null);
   const newDataRef = useRef([]);
@@ -228,8 +230,6 @@ export function PlaceholdersAndVanishInput({
       inputRef.current.scrollTop = 0;
     }
   };
-
-  console.log(error)
 
   if (error) {
     return (
