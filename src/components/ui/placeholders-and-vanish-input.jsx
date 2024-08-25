@@ -4,14 +4,42 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Textarea } from "./textarea";
-import { Button } from "./button";
+import { z } from "zod"; // Import Zod
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { AlertCircle } from "lucide-react";
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
+// Define the Zod schema
+const formSchema = z.object({
+  description: z
+    .string()
+    .min(300, "The description must be at least 300 characters long"), // Optional: Add a minimum length
+});
 
 export function PlaceholdersAndVanishInput({
   placeholders,
   onChange,
-  onSubmit
+  onSubmit,
 }) {
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
+  const [error, setError] = useState(null); // Error state for the validation message
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      description: "",
+    },
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(formSchema), // Integrate Zod with react-hook-form
+  });
 
   const intervalRef = useRef(null);
   const startAnimation = () => {
@@ -47,7 +75,6 @@ export function PlaceholdersAndVanishInput({
   const [value, setValue] = useState("");
   const [animating, setAnimating] = useState(false);
   const [height, setHeight] = useState("48px"); // Initial height
-  const [borderRadius, setBorderRadius] = useState("9999px"); // Rounded border for small input
 
   const draw = useCallback(() => {
     if (!inputRef.current) return;
@@ -144,7 +171,7 @@ export function PlaceholdersAndVanishInput({
         } else {
           setValue("");
           setAnimating(false);
-          resetHeightAndBorder();
+          resetHeight();
         }
       });
     };
@@ -153,11 +180,11 @@ export function PlaceholdersAndVanishInput({
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !animating) {
-      vanishAndSubmit();
+      vanishAndSubmit(e);
     }
   };
 
-  const vanishAndSubmit = () => {
+  const vanishAndSubmit = (e) => {
     setAnimating(true);
     draw();
 
@@ -169,12 +196,17 @@ export function PlaceholdersAndVanishInput({
       );
       animate(maxX);
     }
+    onSubmit && onSubmit(e);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    vanishAndSubmit();
-    onSubmit && onSubmit(e);
+  const handleFormSubmit = (data) => {
+    // Reset any previous error
+    setError(null);
+
+    if (!animating) {
+      vanishAndSubmit();
+      onSubmit(data); // Pass the validated data
+    }
   };
 
   const handleInputChange = (e) => {
@@ -186,109 +218,142 @@ export function PlaceholdersAndVanishInput({
       textarea.style.height = "auto"; // Reset the height to auto to calculate the scrollHeight correctly
       textarea.style.height = `${textarea.scrollHeight}px`; // Set the height based on the scrollHeight
 
-      // Adjust border radius based on the height
       setHeight(textarea.style.height);
     }
   };
 
-  const resetHeightAndBorder = () => {
+  const resetHeight = () => {
     setHeight("48px");
-
     if (inputRef.current) {
       inputRef.current.scrollTop = 0;
     }
   };
 
+  console.log(error)
+
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    );
+  }
   return (
-    <form
-      className={cn(
-        "rounded-lg w-full relative max-w-xl mx-auto bg-white dark:bg-zinc-800 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] transition duration-200",
-        value && "bg-gray-50"
-      )}
-      onSubmit={handleSubmit}
-    >
-      <canvas
+    <Form {...form}>
+      <form
         className={cn(
-          "absolute pointer-events-none text-base transform scale-50 top-[20%] left-2 sm:left-8 origin-top-left filter invert dark:invert-0 pr-20",
-          !animating ? "opacity-0" : "opacity-100"
+          "rounded-lg w-full relative max-w-xl mx-auto bg-white dark:bg-zinc-800 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] transition duration-200",
+          value && "bg-gray-50"
         )}
-        ref={canvasRef}
-      />
-      <Textarea
-        onChange={handleInputChange}
-        onKeyDown={handleKeyDown}
-        ref={inputRef}
-        value={value}
-        className={cn(
-          "w-full relative text-sm sm:text-base z-50 border-none dark:text-white bg-transparent text-black h-full focus:outline-none focus:ring-0",
-          animating && "text-transparent dark:text-transparent"
-        )}
-        style={{ height }} // Set the dynamic height
-      />
-      <Button
-        disabled={!value}
-        type="submit"
-        className="absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full transition duration-200 flex items-center justify-center"
+        onSubmit={form.handleSubmit(handleFormSubmit)} // Hook the form with react-hook-form
       >
-        <motion.svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="text-gray-300 h-4 w-4"
-        >
-          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-          <motion.path
-            d="M5 12l14 0"
-            initial={{
-              strokeDasharray: "50%",
-              strokeDashoffset: "50%",
-            }}
-            animate={{
-              strokeDashoffset: value ? 0 : "50%",
-            }}
-            transition={{
-              duration: 0.3,
-              ease: "linear",
-            }}
-          />
-          <path d="M13 18l6 -6" />
-          <path d="M13 6l6 6" />
-        </motion.svg>
-      </Button>
-      <div className="absolute inset-0 flex mt-3 pointer-events-none">
-        <AnimatePresence mode="wait">
-          {!value && (
-            <motion.p
-              initial={{
-                y: 5,
-                opacity: 0,
-              }}
-              key={`current-placeholder-${currentPlaceholder}`}
-              animate={{
-                y: 0,
-                opacity: 1,
-              }}
-              exit={{
-                y: -15,
-                opacity: 0,
-              }}
-              transition={{
-                duration: 0.3,
-                ease: "linear",
-              }}
-              className="dark:text-zinc-500 text-sm sm:text-base font-normal text-neutral-500 pl-4 sm:pl-4 text-left w-[calc(100%-2rem)] truncate"
-            >
-              {placeholders[currentPlaceholder]}
-            </motion.p>
+        <canvas
+          className={cn(
+            "absolute pointer-events-none text-base transform scale-50 top-[20%] left-2 sm:left-8 origin-top-left filter invert dark:invert-0 pr-20",
+            !animating ? "opacity-0" : "opacity-100"
           )}
-        </AnimatePresence>
-      </div>
-    </form>
+          ref={canvasRef}
+        />
+        <div className="relative flex items-end">
+          <div className="w-full">
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <Textarea
+                    {...field}
+                    {...register("description")} // Register the textarea for validation
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyDown}
+                    ref={inputRef}
+                    value={value}
+                    className={cn(
+                      "w-full relative text-sm sm:text-base z-50 border-none dark:text-white bg-transparent text-black h-full focus:outline-none focus:ring-0 pl-4 pt-3",
+                      animating && "text-transparent dark:text-transparent"
+                    )}
+                    style={{ height }} // Set the dynamic height
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="absolute inset-0 flex mt-[0.65rem] pointer-events-none">
+              <AnimatePresence mode="wait">
+                {!value && (
+                  <motion.p
+                    initial={{
+                      y: 5,
+                      opacity: 0,
+                    }}
+                    key={`current-placeholder-${currentPlaceholder}`}
+                    animate={{
+                      y: 0,
+                      opacity: 1,
+                    }}
+                    exit={{
+                      y: -15,
+                      opacity: 0,
+                    }}
+                    transition={{
+                      duration: 0.3,
+                      ease: "linear",
+                    }}
+                    className="dark:text-zinc-500 text-sm sm:text-base font-normal text-neutral-500 pl-4 sm:pl-4 text-left w-[calc(100%-2rem)] truncate"
+                  >
+                    {placeholders[currentPlaceholder]}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </div>
+            {errors.description && (
+              <p className="text-red-500 text-sm mt-1 pl-4">
+                {errors.description.message}
+              </p>
+            )}
+          </div>
+          <button
+            disabled={!value}
+            type="submit"
+            className={`relative ml-4 right-1 z-50 -top-1 h-10 w-10 rounded-lg transition duration-200 flex items-center justify-center ${
+              value ? "bg-white text-black" : "bg-black text-white"
+            }`}
+          >
+            <motion.svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-4 w-4"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <motion.path
+                d="M5 12l14 0"
+                initial={{
+                  strokeDasharray: "50%",
+                  strokeDashoffset: "50%",
+                }}
+                animate={{
+                  strokeDashoffset: value ? 0 : "50%",
+                }}
+                transition={{
+                  duration: 0.3,
+                  ease: "linear",
+                }}
+              />
+              <path d="M13 18l6 -6" />
+              <path d="M13 6l6 6" />
+            </motion.svg>
+          </button>
+        </div>
+      </form>
+    </Form>
   );
 }
