@@ -7,17 +7,20 @@ import { Textarea } from "./textarea";
 import { z } from "zod"; // Import Zod
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { AlertCircle } from "lucide-react";
-
+import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 // Define the Zod schema
 const formSchema = z.object({
   description: z
     .string()
-    .min(300, "The description must be at least 300 characters long"), // Optional: Add a minimum length
-});
+    .nonempty({
+      message: "Can't be empty!",
+    })
+    .min(100)
+    .max(500, "The description must be at least 300 characters long")
+  });
 
 export function PlaceholdersAndVanishInput({
   placeholders,
@@ -200,9 +203,6 @@ export function PlaceholdersAndVanishInput({
   };
 
   const handleFormSubmit = (data) => {
-    // Reset any previous error
-    setError(null);
-
     if (!animating) {
       vanishAndSubmit();
       onSubmit(data); // Pass the validated data
@@ -316,7 +316,7 @@ export function PlaceholdersAndVanishInput({
             disabled={!value}
             type="submit"
             className={`relative ml-4 right-1 z-50 -top-1 h-10 w-10 rounded-lg transition duration-200 flex items-center justify-center ${
-              value ? "bg-white text-black" : "bg-black text-white"
+              value ? "bg-white text-black" : "bg-black/40 text-white"
             }`}
           >
             <motion.svg
@@ -329,7 +329,7 @@ export function PlaceholdersAndVanishInput({
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="h-4 w-4"
+              className="h-6 w-6"
             >
               <path stroke="none" d="M0 0h24v24H0z" fill="none" />
               <motion.path
