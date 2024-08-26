@@ -275,7 +275,7 @@ const DialogDemo = ({ skills, onUpdate }) => {
         <DialogHeader>
           <DialogTitle>Edit analysis</DialogTitle>
           <DialogDescription>
-            Make changes to the analysis here. Click save when you're done.
+            Make changes to the analysis here. Click save when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(onSubmit)}>
