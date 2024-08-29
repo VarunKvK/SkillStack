@@ -6,31 +6,8 @@ import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { CardSpotlight } from "@/components/ui/card-spotlight";
 import { Badge } from "@/components/ui/badge";
-import {
-  AwardIcon,
-  BookAIcon,
-  ChevronsUpDownIcon,
-  CrosshairIcon,
-  PencilIcon,
-  SendHorizonalIcon,
-  XIcon,
-} from "lucide-react";
+import { AwardIcon, BookAIcon, CrosshairIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 const Projects = () => {
   const { data, status } = useSession();
@@ -108,6 +85,7 @@ const Projects = () => {
   );
 };
 
+//A custom placeholder created using ShadCN UI and Acentricity UI.
 const Placeholder = ({ placeholders, handleChange, onSubmit }) => {
   return (
     <div className="flex flex-col items-center justify-center w-full">
@@ -120,16 +98,43 @@ const Placeholder = ({ placeholders, handleChange, onSubmit }) => {
   );
 };
 
-const ResultContainer = ({ data, skills }) => {
-  const [updateSkills, setUpdateSkills] = useState(skills);
+//This is the modal that gives out the result when the description has been analyzed by GEMINI.
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
-  const handleUpdate = (updatedItem) => {
-    setUpdateSkills((prevSkills) =>
-      prevSkills.map((skill) =>
-        skill.id === updatedItem.id ? updatedItem : skill
-      )
-    );
-  };
+const ResultContainer = ({ data, skills }) => {
+  const [insights, setInsights] = useState(skills);
+  console.log(data)
+  async function postInsights(){
+    const response=await fetch("/api/projects",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        skills,data
+      })
+    })
+  }
+
+  function onContinue() {
+    // Cancel the insights
+    setInsights([]);
+    // You can also add navigation or any other action here
+    console.log("Insights have been cancelled.");
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+  }
   return (
     <div className="w-full flex flex-col items-center gap-4 mb-[6rem]">
       <h1 className="text-2xl font-semibold">
@@ -137,7 +142,7 @@ const ResultContainer = ({ data, skills }) => {
         <span className="text-[#e2fd6c]"> Project Insights</span>
       </h1>
       <div className="grid">
-        {updateSkills.map((s, index) => (
+        {insights.map((s, index) => (
           <CardSpotlight
             key={index}
             className="rounded-xl flex flex-col gap-4 relative"
@@ -149,7 +154,6 @@ const ResultContainer = ({ data, skills }) => {
                   {s.projectInsights.projectType}
                 </p>
               </div>
-              <DialogDemo skills={s} onUpdate={handleUpdate} />
             </div>
             <div className="flex flex-col gap-.5 z-20 relative">
               <h2 className="opacity-50">Project Purpose</h2>
@@ -211,16 +215,43 @@ const ResultContainer = ({ data, skills }) => {
                 </div>
               </div>
             </div>
-            <div className="flex justify-between items-center relative z-20 mt-6">
-              <Button className="bg-[#e2fd6c] text-black hover:text-[#e2fd6c] dark:hover:text-black">
+            <div className="w-full flex flex-col md:flex-row justify-between items-center relative z-20 mt-6 gap-2">
+              <Button onClick={postInsights} className="w-full bg-[#e2fd6c] text-black hover:text-[#e2fd6c] dark:hover:text-black">
                 Looks Good!
               </Button>
-              <Button
-                variant={"secondary"}
-                className="border border-white/50 dark:bg-black bg-white"
-              >
-                Cancel
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full dark:bg-black bg-white border-white opacity-50 hover:opacity-100"
+                  >
+                    Cancel
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="dark:bg-black bg-white w-[80%] md:w-full rounded-lg relative top-[10rem]">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete
+                      your insights.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="dark:bg-black bg-white dark:text-white text-black border-white" asChild>
+                      <Button>
+                        Cancel
+                      </Button>
+                    </AlertDialogCancel>
+                    <AlertDialogAction asChild>
+                      <Button onClick={onContinue}>
+                      Continue
+                      </Button>
+                      </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </CardSpotlight>
         ))}
@@ -229,293 +260,3 @@ const ResultContainer = ({ data, skills }) => {
   );
 };
 export default Projects;
-
-const analysisSchema = z.object({
-  projectType: z.string().min(1, "Project type is required."),
-  purpose: z.string().min(1, "Project purpose is required."),
-  challenges: z
-    .array(z.string().max(30, "Challenges cannot exceed"))
-    .optional(), // This will store the list of selected challenges
-  
-});
-
-const DialogDemo = ({ skills, onUpdate }) => {
-  const [open, setOpen] = useState(false);
-  const [newChallenge, setNewChallenge] = useState("");
-  const [challenges, setChallenges] = useState(
-    skills.projectInsights.challenges.map((c) => c.description) || []
-  );
-  const [newAbility, setNewAbility] = useState("");
-  const [ability, setAbility] = useState(
-    skills.projectInsights.skills.map((s) => s.name) || []
-  );
-
-  const [newFeatures, setNewFeatures] = useState("");
-  const [features, setFeatures] = useState(
-    skills.projectInsights.features.map((f) => f.name) || []
-  );
-
-  const [newLearnings, setNewLearnings] = useState("");
-  const [learnings, setLearnings] = useState(
-    skills.projectInsights.learnings.map((f) => f.description) || []
-  );
-
-  const form = useForm({
-    resolver: zodResolver(analysisSchema),
-    defaultValues: {
-      projectType: skills.projectInsights.projectType,
-      purpose: skills.projectInsights.purpose,
-      challenges: challenges,
-      skills: ability,
-    },
-  });
-
-  const handleAddChallenge = () => {
-    if (newChallenge && !challenges.includes(newChallenge)) {
-      setChallenges((prev) => [...prev, newChallenge]);
-      setNewChallenge("");
-    }
-  };
-
-  const handleDeleteChallenge = (challengeToDelete) => {
-    setChallenges((prev) =>
-      prev.filter((challenge) => challenge !== challengeToDelete)
-    );
-  };
-
-  const handleAddAbility = () => {
-    if (newAbility && !ability.includes(newAbility)) {
-      setAbility((prev) => [...prev, newAbility]);
-      setNewAbility("");
-    }
-  };
-
-  const handleDeleteAbility = (abilityToDelete) => {
-    setAbility((prev) => prev.filter((ability) => ability !== abilityToDelete));
-  };
-
-  const handleAddFeatures = () => {
-    if (newFeatures && !features.includes(newFeatures)) {
-      setFeatures((prev) => [...prev, newFeatures]);
-      setNewFeatures("");
-    }
-  };
-
-  const handleDeleteFeatures = (featureToDelete) => {
-    setFeatures((prev) =>
-      prev.filter((feature) => feature !== featureToDelete)
-    );
-  };
-  const handleAddLearnings = () => {
-    if (newLearnings && !learnings.includes(newLearnings)) {
-      setLearnings((prev) => [...prev, newLearnings]);
-      setNewLearnings("");
-    }
-  };
-
-  const handleDeleteLearnings = (learningToDelete) => {
-    setLearnings((prev) =>
-      prev.filter((learning) => learning !== learningToDelete)
-    );
-  };
-
-  const onSubmit = (data) => {
-    onUpdate({
-      ...skills,
-      projectInsights: {
-        ...skills.projectInsights,
-        projectType: data.projectType,
-        purpose: data.purpose,
-        challenges: challenges.map((desc) => ({ description: desc })),
-      },
-    });
-
-    setOpen(false);
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          className="border dark:border-white border-black dark:bg-black bg-white h-10 w-12 flex items-center justify-center"
-        >
-          <PencilIcon className="w-6 h-6 dark:text-white text-black" />
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="md:max-w-[800px] dark:bg-black bg-white dark:border-black/50 border-gray-300">
-        <DialogHeader>
-          <DialogTitle>Edit analysis</DialogTitle>
-          <DialogDescription className="text-gray-400">
-            Make changes to the analysis here. Click save when you&apos;re done.
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="grid gap-5 py-4 mb-4">
-            <div className="grid grid-cols-2 items-start gap-2">
-              <div className="grid items-center gap-2">
-                <Label htmlFor="type">Project Type</Label>
-                <Input id="type" {...form.register("projectType")} />
-                {form.formState.errors.projectType && (
-                  <p className="text-red-500 text-sm">
-                    {form.formState.errors.projectType.message}
-                  </p>
-                )}
-              </div>
-              <div className="grid items-center gap-2">
-                <Label htmlFor="purpose">Project Purpose</Label>
-                <Input id="purpose" {...form.register("purpose")} />
-                {form.formState.errors.purpose && (
-                  <p className="text-red-500 text-sm">
-                    {form.formState.errors.purpose.message}
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className="grid items-center gap-2">
-              <Label htmlFor="challenges">Key Challenges</Label>
-              <div className="w-full flex gap-2">
-                <Input
-                  id="challenges"
-                  value={newChallenge}
-                  onChange={(e) => setNewChallenge(e.target.value)}
-                  placeholder="Add a new challenge..."
-                  className=""
-                />
-                <Button
-                  type="button"
-                  onClick={handleAddChallenge}
-                  className="dark:bg-white dark:text-black"
-                >
-                  <SendHorizonalIcon className="w-4" />
-                </Button>
-              </div>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {challenges.map((challenge, index) => (
-                  <Badge
-                    key={index}
-                    variant="outline"
-                    className="flex items-center gap-2 truncate"
-                  >
-                    {challenge}
-                    <XIcon
-                      className="w-4 h-4 cursor-pointer"
-                      onClick={() => handleDeleteChallenge(challenge)}
-                    />
-                  </Badge>
-                ))}
-              </div>
-            </div>
-            <div className="grid grid-cols-2 items-start gap-2">
-              <div className="grid items-center gap-2">
-                <Label htmlFor="skill">Skills</Label>
-                <div className="w-full flex items-center gap-2 relative">
-                  <Input
-                    id="skill"
-                    value={newAbility}
-                    onChange={(e) => setNewAbility(e.target.value)}
-                    placeholder="You got more skills..."
-                    className=""
-                  />
-                  <Button
-                    type="button"
-                    onClick={handleAddAbility}
-                    className="dark:bg-white dark:text-black absolute right-1 h-[2.3rem]"
-                  >
-                    <SendHorizonalIcon className="w-4" />
-                  </Button>
-                </div>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {ability.map((ability, index) => (
-                    <Badge
-                      key={index}
-                      variant="outline"
-                      className="flex items-center gap-2 truncate"
-                    >
-                      {ability}
-                      <XIcon
-                        className="w-4 h-4 cursor-pointer"
-                        onClick={() => handleDeleteAbility(ability)}
-                      />
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-              <div className="grid items-center gap-2">
-                <Label htmlFor="feature">Features</Label>
-                <div className="w-full flex items-center gap-2 relative">
-                  <Input
-                    id="feature"
-                    value={newFeatures}
-                    onChange={(e) => setNewFeatures(e.target.value)}
-                    placeholder="Go on add more features..."
-                    className=""
-                  />
-                  <Button
-                    type="button"
-                    onClick={handleAddFeatures}
-                    className="dark:bg-white dark:text-black absolute right-1 h-[2.3rem]"
-                  >
-                    <SendHorizonalIcon className="w-4" />
-                  </Button>
-                </div>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {features.map((f, index) => (
-                    <Badge
-                      key={index}
-                      variant="outline"
-                      className="flex items-center gap-2 truncate"
-                    >
-                      {f}
-                      <XIcon
-                        className="w-4 h-4 cursor-pointer"
-                        onClick={() => handleDeleteFeatures(features)}
-                      />
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </div>
-              <div className="grid items-center gap-2">
-                <Label htmlFor="learning">Learnings</Label>
-                <div className="w-full flex items-center gap-2 relative">
-                  <Input
-                    id="learning"
-                    value={newLearnings}
-                    onChange={(e) => setNewLearnings(e.target.value)}
-                    placeholder="You learnt more from the project..."
-                    className=""
-                  />
-                  <Button
-                    type="button"
-                    onClick={handleAddLearnings}
-                    className="dark:bg-white dark:text-black absolute right-1 h-[2.3rem]"
-                  >
-                    <SendHorizonalIcon className="w-4" />
-                  </Button>
-                </div>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {learnings.map((l, index) => (
-                    <Badge
-                      key={index}
-                      variant="outline"
-                      className="flex items-center gap-2 truncate"
-                    >
-                      {l}
-                      <XIcon
-                        className="w-4 h-4 cursor-pointer"
-                        onClick={() => handleDeleteLearnings(features)}
-                      />
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit">Save changes</Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
-};
