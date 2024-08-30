@@ -228,7 +228,7 @@ const ResultContainer = ({ data, skills }) => {
                     Cancel
                   </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent className="dark:bg-black bg-white w-[80%] md:w-full rounded-lg relative top-[10rem]">
+                <AlertDialogContent className="dark:bg-black bg-white w-[80%] md:w-full rounded-lg relative top-[10rem] sm:top-0 border-white/20">
                   <AlertDialogHeader>
                     <AlertDialogTitle>
                       Are you absolutely sure?
