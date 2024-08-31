@@ -3,6 +3,7 @@ import "./globals.css";
 import ThemeProvider from "@/components/theme-provider";
 import Header from "@/components/layout/Header";
 import { useSession } from "next-auth/react";
+import { Toaster } from "@/components/ui/toaster"
 
 export const metadata = {
   title: "SkillStack",
@@ -22,6 +23,7 @@ export default function RootLayout({ children }) {
           <Providers>
       <Header/>
             {children}
+            <Toaster/>
             </Providers>
         </ThemeProvider>
       </body>

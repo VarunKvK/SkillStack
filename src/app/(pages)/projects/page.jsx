@@ -8,8 +8,10 @@ import { CardSpotlight } from "@/components/ui/card-spotlight";
 import { Badge } from "@/components/ui/badge";
 import { AwardIcon, BookAIcon, CrosshairIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 
 const Projects = () => {
+  const [progress, setProgress] = useState();
   const { data, status } = useSession();
   const [text, setText] = useState();
   const [skills, setSkills] = useState();
@@ -29,6 +31,7 @@ const Projects = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
     setAnalyzing(true);
+    setProgress(0);
     try {
       const response = await fetch("/api/analysis", {
         method: "POST",
@@ -49,6 +52,7 @@ const Projects = () => {
     } catch (error) {
       console.error("Error:", error);
     } finally {
+      setProgress(98);
       setAnalyzing(false);
     }
   };
@@ -78,7 +82,12 @@ const Projects = () => {
             onSubmit={onSubmit}
           />
         </div>
-        {analyzing && <div className="w-full text-center">Analyzing...</div>}
+        {analyzing && (
+          <div className="w-full flex flex-col items-center justify-center gap-1">
+            <p className="text-sm">Analyzing...</p>
+            <Progress value={progress} className="w-[30%] h-[.5rem]" />
+          </div>
+        )}
         {skills && <ResultContainer data={data} skills={skills} />}
       </div>
     </div>
@@ -110,20 +119,50 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
 
 const ResultContainer = ({ data, skills }) => {
+  const [loading, setLoading] = useState(false);
   const [insights, setInsights] = useState(skills);
-  console.log(data)
-  async function postInsights(){
-    const response=await fetch("/api/projects",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({
-        skills,data
-      })
-    })
+  const { toast } = useToast();
+  async function postInsights() {
+    try {
+      setLoading(true); // Set loading to true when the request starts
+
+      const response = await fetch("/api/projects", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          skills,
+          data,
+        }),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "We were correct about your insights.",
+          description: "The insights extracted by us were successfully saved.",
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Failed to save insights.",
+          description:
+            "An error occurred while trying to save your insights. Please try again.",
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Failed to save insights.",
+        description:
+          "An error occurred while trying to save your insights. Please try again.",
+      });
+    } finally {
+      setLoading(false); // Set loading to false when the request completes
+    }
   }
 
   function onContinue() {
@@ -138,7 +177,12 @@ const ResultContainer = ({ data, skills }) => {
   return (
     <div className="w-full flex flex-col items-center gap-4 mb-[6rem]">
       <h1 className="text-2xl font-semibold">
-        {data.user?.name}, Your
+        {data ? (
+          <span className="">{data.user?.name}</span>
+        ) : (
+          <span className="">Anonymous</span>
+        )}
+        , Your
         <span className="text-[#e2fd6c]"> Project Insights</span>
       </h1>
       <div className="grid">
@@ -216,8 +260,11 @@ const ResultContainer = ({ data, skills }) => {
               </div>
             </div>
             <div className="w-full flex flex-col md:flex-row justify-between items-center relative z-20 mt-6 gap-2">
-              <Button onClick={postInsights} className="w-full bg-[#e2fd6c] text-black hover:text-[#e2fd6c] dark:hover:text-black">
-                Looks Good!
+              <Button
+                onClick={postInsights}
+                className="w-full bg-[#e2fd6c] text-black hover:text-[#e2fd6c] dark:hover:text-black"
+              >
+                {loading ? <span>Saving...</span> : <span>Looks Good!</span>}
               </Button>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
@@ -239,16 +286,15 @@ const ResultContainer = ({ data, skills }) => {
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel className="dark:bg-black bg-white dark:text-white text-black border-white" asChild>
-                      <Button>
-                        Cancel
-                      </Button>
+                    <AlertDialogCancel
+                      className="dark:bg-black bg-white dark:text-white text-black border-white"
+                      asChild
+                    >
+                      <Button>Cancel</Button>
                     </AlertDialogCancel>
                     <AlertDialogAction asChild>
-                      <Button onClick={onContinue}>
-                      Continue
-                      </Button>
-                      </AlertDialogAction>
+                      <Button onClick={onContinue}>Continue</Button>
+                    </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
