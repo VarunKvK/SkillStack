@@ -5,10 +5,15 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { HoverEffect } from "@/components/ui/card-hover-effect";
+import { Progress } from "@/components/ui/progress";
+
 const Skills = () => {
+  const [progress, setProgress] = useState();
   const { data: session, status } = useSession();
   const [skills, setSkills] = useState();
-  const router = useRouter(); // Added useRouter hook
+  // const [newSkill,setNewSkill]=useState()
+  const router = useRouter();
 
   useEffect(() => {
     if (status === "loading") return;
@@ -21,6 +26,7 @@ const Skills = () => {
     }
 
     const fetchSkills = async () => {
+      setProgress(0);
       const response = await fetch("/api/skills", {
         method: "GET",
         headers: {
@@ -29,12 +35,24 @@ const Skills = () => {
       });
       const data = await response.json();
       setSkills(data.text);
+      setProgress(99);
     };
 
     if (session) {
       fetchSkills();
     }
   }, [session, status, router]);
+
+  const onSubmit = async (values) => {
+    const response = await fetch("/api/skills", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ user: session, values: values }),
+    });
+    console.log(await response.json());
+  };
 
   if (status === "loading") {
     return <GlobalLoader loading={true} />;
@@ -57,7 +75,13 @@ const Skills = () => {
             from your description.
           </p>
         </div>
-        <SkillContainer skill={skills} />
+        {!skills && (
+          <div className="w-full flex flex-col items-center justify-center gap-1">
+            <p className="text-sm">Getting your skills...</p>
+            <Progress value={progress} className="w-[30%] h-[.5rem]" />
+          </div>
+        )}
+        {skills && <SkillContainer skill={skills} onSubmit={onSubmit} />}
       </div>
     </div>
   );
@@ -65,12 +89,10 @@ const Skills = () => {
 
 export default Skills;
 
-const SkillContainer = ({ skill }) => {
+const SkillContainer = ({ skill, onSubmit }) => {
   return (
-    <div className="flex flex-col gap-4">
-      <div className="">
-        {/* //Use the Card hover effect from acentricity UI  */}
-      </div>
+    <div className="">
+      <HoverEffect items={skill} onSubmit={onSubmit} />
     </div>
   );
 };

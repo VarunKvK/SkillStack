@@ -47,37 +47,37 @@ export async function GET(req, res) {
     // const response = await result.response;
     // const text = response.text();
     const text = [
-  {
-    "_id": "66d2bd9d4699e94cb482a0ef",
-    "name": "Website Development",
-    "proficiency": 10,
-    "general_category": "Development",
-    "specific_category": "Web Development"
-  },
-  {
-    "_id": "66d2bd9d4699e94cb482a0f0",
-    "name": "Web Design",
-    "proficiency": 10,
-    "general_category": "Development",
-    "specific_category": "Web Design"
-  },
-  {
-    "_id": "66d2bd9d4699e94cb482a0f1",
-    "name": "Theme Customization",
-    "proficiency": 10,
-    "general_category": "Development",
-    "specific_category": "Web Development"
-  },
-  {
-    "_id": "66d2bd9d4699e94cb482a0f2",
-    "name": "API Integration",
-    "proficiency": 10,
-    "general_category": "Development",
-    "specific_category": "Backend Development"
-  }
-];
+      {
+        _id: "66d2bd9d4699e94cb482a0ef",
+        name: "Website Development",
+        proficiency: 10,
+        general_category: "Soft Skills",
+        specific_category: "Web Development",
+      },
+      {
+        _id: "66d2bd9d4699e94cb482a0f0",
+        name: "Web Design",
+        proficiency: 10,
+        general_category: "Development",
+        specific_category: "Web Design",
+      },
+      {
+        _id: "66d2bd9d4699e94cb482a0f1",
+        name: "Theme Customization",
+        proficiency: 10,
+        general_category: "Development",
+        specific_category: "Web Development",
+      },
+      {
+        _id: "66d2bd9d4699e94cb482a0f2",
+        name: "API Integration",
+        proficiency: 10,
+        general_category: "Development",
+        specific_category: "Backend Development",
+      },
+    ];
 
-    return Response.json({ message: "Success", text});
+    return Response.json({ message: "Success", text });
   } catch (e) {
     console.error("Error analyzing skills:", e);
     return Response.json({
@@ -85,3 +85,24 @@ export async function GET(req, res) {
     });
   }
 }
+
+export async function POST(req, res) {
+  try {
+    await connectToDatabase();
+    const { values, user } = await req.json();
+    const userExist = await User.findOne({ email: user.user.email });
+    if (!userExist) {
+      return Response.json({ message: "User not found" });
+    }
+    console.log(values);
+    return Response.json({ message: "Success" });
+  } catch (e) {
+    console.error("Error updating skills:", e);
+    return Response.json({
+      error: "An error occurred while updating skills",
+    });
+  }
+}
+
+
+//Need to look into the issue of what information needs to be saved into the database to get the correct result.
