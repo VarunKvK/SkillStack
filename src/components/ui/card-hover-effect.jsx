@@ -12,6 +12,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
@@ -23,7 +35,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 export const HoverEffect = ({ items, className, onSubmit }) => {
   let [hoveredIndex, setHoveredIndex] = useState(null);
-
   return (
     <div
       className={cn(
@@ -32,10 +43,11 @@ export const HoverEffect = ({ items, className, onSubmit }) => {
       )}
     >
       <div className="relative group  block p-2 h-full w-full">
-        <AddSkills onSubmit={onSubmit}/>
+        <AddSkills onSubmit={onSubmit} />
       </div>
-      {items.map((item, idx) => (
+      {items.map((item, idx,index) => (
         <div
+        key={index}
           className="relative group block p-2 h-full w-full"
           onMouseEnter={() => setHoveredIndex(idx)}
           onMouseLeave={() => setHoveredIndex(null)}
@@ -107,18 +119,39 @@ export const CardDescription = ({ className, children }) => {
 };
 
 const formSchema = z.object({
-  name: z.string().min(2, { message: "Name should have at least 2 characters" }),
-  general_category: z.string().min(2, { message: "Category should have at least 2 characters" }),
+  name: z
+    .string()
+    .min(2, { message: "Name should have at least 2 characters" }),
+  proficiency: z
+    .string()
+    .min(2, { message: "Category should have at least 2 characters" }),
 });
 
-const AddSkills = ({onSubmit}) => {
-  const form =useForm({
-    resolver:zodResolver(formSchema),
+const proficiencyPoints = {
+  beginner: 5,
+  intermediate: 10,
+  advanced: 15,
+};
+
+
+const AddSkills = ({ onSubmit }) => {
+  const [position, setPosition] = useState("beginner");
+  const form = useForm({
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-      general_category: ''
+      name: "",
+      proficiency: "beginner",
+    },
+  });
+
+  const handleSubmit=(data)=>{
+    const points= proficiencyPoints[position]
+    const skillData={
+      name:data.name,
+      proficiency: points,
     }
-  })
+    onSubmit(skillData)
+  }
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -136,7 +169,7 @@ const AddSkills = ({onSubmit}) => {
             Add more skills if you have any. Click save when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form onSubmit={form.handleSubmit(handleSubmit)}>
           <div className="grid gap-4 py-4">
             <div className="grid items-center gap-4">
               <Label htmlFor="name" className="text-left">
@@ -147,22 +180,40 @@ const AddSkills = ({onSubmit}) => {
                 {...form.register("name")}
                 placeholder="You can add more skills..."
                 className=""
-                />
-            </div>
-            <div className="grid items-center gap-4">
-              <Label htmlFor="general_category" className="text-left">
-                Category
-              </Label>
-              <Input
-                {...form.register("general_category")}
-                id="general_category"
-                placeholder="Add what category it fits in..."
-                className=""
               />
             </div>
+            <DropdownMenu>
+              <Label htmlFor="name" className="text-left">
+                Proficiency Level
+              </Label>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="bg-white dark:bg-black dark:border-white/50 border-gray-400 capitalize">{position}</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-full dark:bg-black bg-white dark:border-white/50 border-gray-400">
+                <DropdownMenuLabel>Proficiency Position</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuRadioGroup
+                  value={position}
+                  onValueChange={(value)=>{
+                    setPosition(value);
+                    form.setValue("proficiency", value);
+                  }}
+                >
+                  <DropdownMenuRadioItem value="beginner">
+                    Beginner
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="intermediate">
+                    Intermediate
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="advanced">
+                    Advanced
+                  </DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <div className="flex items-end justify-end w-full">
-          <Button type="submit">Save changes</Button>
+            <Button type="submit">Save changes</Button>
           </div>
         </form>
       </DialogContent>

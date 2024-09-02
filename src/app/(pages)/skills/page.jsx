@@ -34,6 +34,8 @@ const Skills = () => {
         },
       });
       const data = await response.json();
+      // const parsedSkills = JSON.parse(data.text); // Parse the JSON string
+      // setSkills(parsedSkills);
       setSkills(data.text);
       setProgress(99);
     };
