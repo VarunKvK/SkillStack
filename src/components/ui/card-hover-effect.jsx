@@ -133,7 +133,7 @@ const AddSkills = ({onSubmit}) => {
         <DialogHeader>
           <DialogTitle>Add skills</DialogTitle>
           <DialogDescription>
-            Add more skills if you have any. Click save when you're done.
+            Add more skills if you have any. Click save when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(onSubmit)}>
