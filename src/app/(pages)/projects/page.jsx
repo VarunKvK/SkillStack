@@ -85,7 +85,7 @@ const Projects = () => {
         {analyzing && (
           <div className="w-full flex flex-col items-center justify-center gap-1">
             <p className="text-sm">Analyzing...</p>
-            <Progress value={progress} className="w-[30%] h-[.5rem]" />
+            <Progress value={progress} className="w-[30%] h-[.5rem] bg-black" />
           </div>
         )}
         {skills && <ResultContainer data={data} skills={skills} />}

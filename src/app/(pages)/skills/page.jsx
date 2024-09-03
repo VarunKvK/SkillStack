@@ -7,11 +7,25 @@ import { useRouter } from "next/navigation";
 
 import { HoverEffect } from "@/components/ui/card-hover-effect";
 import { Progress } from "@/components/ui/progress";
+import { z } from "zod";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { SlidersHorizontal } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 
 const Skills = () => {
   const [progress, setProgress] = useState();
   const { data: session, status } = useSession();
   const [skills, setSkills] = useState();
+  const { toast } = useToast();
   // const [newSkill,setNewSkill]=useState()
   const router = useRouter();
 
@@ -46,14 +60,35 @@ const Skills = () => {
   }, [session, status, router]);
 
   const onSubmit = async (values) => {
-    const response = await fetch("/api/skills", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ user: session, values: values }),
-    });
-    console.log(await response.json());
+    try {
+      const response = await fetch("/api/skills", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user: session, values: values }),
+      });
+      if (response.ok) {
+        toast({
+          title: "We were correct about your insights.",
+          description: "The insights extracted by us were successfully saved.",
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Failed to save insights.",
+          description:
+            "An error occurred while trying to save your insights. Please try again.",
+        });
+      }
+    } catch (e) {
+      toast({
+        variant: "destructive",
+        title: "Failed to save insights.",
+        description:
+          "An error occurred while trying to save your insights. Please try again.",
+      });
+    }
   };
 
   if (status === "loading") {
@@ -77,10 +112,11 @@ const Skills = () => {
             from your description.
           </p>
         </div>
+        <SearchSkillsContainer skill={skills} />
         {!skills && (
           <div className="w-full flex flex-col items-center justify-center gap-1">
             <p className="text-sm">Getting your skills...</p>
-            <Progress value={progress} className="w-[30%] h-[.5rem]" />
+            <Progress value={progress} className="w-[30%] h-[.5rem] bg-black" />
           </div>
         )}
         {skills && <SkillContainer skill={skills} onSubmit={onSubmit} />}
@@ -96,5 +132,46 @@ const SkillContainer = ({ skill, onSubmit }) => {
     <div className="">
       <HoverEffect items={skill} onSubmit={onSubmit} />
     </div>
+  );
+};
+
+const searchSchema = z.object({
+  searchSkill: z.string(),
+});
+const SearchSkillsContainer = ({ skill }) => {
+  return (
+    <form>
+      <div className="w-full flex items-center gap-2">
+        <Input
+          placeholder="Search for your skills..."
+          type="text"
+          // value={searchSkill}
+          // onChange={(e) => setSearchSkill(e.target.value)}
+        />
+        <Popover>
+          <PopoverTrigger>
+            <div className="flex items-center gap-1">
+              <SlidersHorizontal className="w-4" />
+              <p className="hidden md:block">Filter</p>
+            </div>
+          </PopoverTrigger>
+          <PopoverContent className="dark:bg-black bg-white dark:border-white/20 border-gray-400">
+            <Label>By Category</Label>
+            <Separator className=" bg-white/20 mt-1 mb-2"/>
+            <div className="flex items-center gap-1 mb-4">
+              <Checkbox />
+              <Label>Development</Label>
+            </div>
+            <Separator className="dark:bg-black bg-white dark:border-white/20 border-gray-400"/>
+            <Label>By Proficiency</Label>
+            <Separator className="bg-white/20 mt-1 mb-2"/>
+            <div className="flex items-center gap-1">
+              <Checkbox />
+              <Label>Beginner</Label>
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
+    </form>
   );
 };
