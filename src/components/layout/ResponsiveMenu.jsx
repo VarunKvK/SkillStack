@@ -26,7 +26,7 @@ const ResponsiveMenu = ({ userData, status }) => {
             <Menu />
           </DropdownMenuTrigger>
         )}
-        <DropdownMenuContent className="mr-4 bg-white dark:bg-black dark:border-[#1d1d1d]">
+        <DropdownMenuContent className="absolute z-20 right-[-2rem] mr-4 bg-white dark:bg-black dark:border-[#1d1d1d]">
           {!userData ? (
             <DropdownMenuLabel>
               <Button

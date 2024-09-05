@@ -20,6 +20,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
 const Skills = () => {
   const [progress, setProgress] = useState();
@@ -135,18 +137,23 @@ const SkillContainer = ({ skill, onSubmit }) => {
   );
 };
 
-const searchSchema = z.object({
-  searchSkill: z.string(),
-});
+
 const SearchSkillsContainer = ({ skill }) => {
+  const [searchSkill, setSearchSkill] = useState("");
+
+  // Get unique categories and proficiencies
+  const uniqueCategories = [...new Set(skill?.map((s) => s.general_category))];
+  const uniqueProficiencies = [...new Set(skill?.map((s) => s.proficiency))];
+
   return (
     <form>
       <div className="w-full flex items-center gap-2">
         <Input
           placeholder="Search for your skills..."
+          id="search"
           type="text"
-          // value={searchSkill}
-          // onChange={(e) => setSearchSkill(e.target.value)}
+          value={searchSkill}
+          onChange={(e) => setSearchSkill(e.target.value)}
         />
         <Popover>
           <PopoverTrigger>
@@ -157,18 +164,24 @@ const SearchSkillsContainer = ({ skill }) => {
           </PopoverTrigger>
           <PopoverContent className="dark:bg-black bg-white dark:border-white/20 border-gray-400">
             <Label>By Category</Label>
-            <Separator className=" bg-white/20 mt-1 mb-2"/>
-            <div className="flex items-center gap-1 mb-4">
-              <Checkbox />
-              <Label>Development</Label>
-            </div>
-            <Separator className="dark:bg-black bg-white dark:border-white/20 border-gray-400"/>
+            <Separator className=" bg-white/20 mt-1 mb-2" />
+            {/* Filter by Unique Categories */}
+            {uniqueCategories.map((category, index) => (
+              <div className="flex items-center gap-1 mb-4" key={index}>
+                <Checkbox />
+                <Label>{category}</Label>
+              </div>
+            ))}
+            <Separator className="dark:bg-black bg-white dark:border-white/20 border-gray-400" />
             <Label>By Proficiency</Label>
-            <Separator className="bg-white/20 mt-1 mb-2"/>
-            <div className="flex items-center gap-1">
-              <Checkbox />
-              <Label>Beginner</Label>
-            </div>
+            <Separator className="bg-white/20 mt-1 mb-2" />
+            {/* Filter by Unique Proficiencies */}
+            {uniqueProficiencies.map((proficiency, index) => (
+              <div className="flex items-center gap-1" key={index}>
+                <Checkbox />
+                <Label>{proficiency === 5 ? 'Beginner' : proficiency === 10 ? 'Intermediate' : 'Advanced'}</Label>
+              </div>
+            ))}
           </PopoverContent>
         </Popover>
       </div>
