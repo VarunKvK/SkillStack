@@ -145,8 +145,8 @@ const SearchSkillsContainer = ({ skill }) => {
         <Input
           placeholder="Search for your skills..."
           type="text"
-          // value={searchSkill}
-          // onChange={(e) => setSearchSkill(e.target.value)}
+        // value={searchSkill}
+        // onChange={(e) => setSearchSkill(e.target.value)}
         />
         <Popover>
           <PopoverTrigger>
@@ -157,14 +157,14 @@ const SearchSkillsContainer = ({ skill }) => {
           </PopoverTrigger>
           <PopoverContent className="dark:bg-black bg-white dark:border-white/20 border-gray-400">
             <Label>By Category</Label>
-            <Separator className=" bg-white/20 mt-1 mb-2"/>
+            <Separator className=" bg-white/20 mt-1 mb-2" />
             <div className="flex items-center gap-1 mb-4">
               <Checkbox />
               <Label>Development</Label>
             </div>
-            <Separator className="dark:bg-black bg-white dark:border-white/20 border-gray-400"/>
+            <Separator className="dark:bg-black bg-white dark:border-white/20 border-gray-400" />
             <Label>By Proficiency</Label>
-            <Separator className="bg-white/20 mt-1 mb-2"/>
+            <Separator className="bg-white/20 mt-1 mb-2" />
             <div className="flex items-center gap-1">
               <Checkbox />
               <Label>Beginner</Label>
