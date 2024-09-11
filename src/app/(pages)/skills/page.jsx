@@ -11,7 +11,7 @@ import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { RotateCcwIcon, SlidersHorizontal } from "lucide-react";
+import { Blocks, GaugeIcon, RotateCcwIcon, SlidersHorizontal } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -199,10 +199,11 @@ const SearchSkillsContainer = ({ skill }) => {
             {uniqueCategories.map((category, index) => (
               <div className="flex items-center gap-1 mb-4" key={index}>
                 <Checkbox
+                  id="category"
                   checked={selectedCategory === category}
                   onCheckedChange={() => setSelectedCategory(category)}
                 />
-                <Label>{category}</Label>
+                <Label htmlfor="category">{category}</Label>
               </div>
             ))}
             <Separator className="dark:bg-black bg-white dark:border-white/20 border-gray-400" />
@@ -213,10 +214,11 @@ const SearchSkillsContainer = ({ skill }) => {
             {uniqueProficiencies.map((proficiency, index) => (
               <div className="flex items-center gap-1" key={index}>
                 <Checkbox
+                  id="proficiency"
                   checked={selectedProficiency === proficiency}
                   onCheckedChange={() => setSelectedProficiency(proficiency)}
                 />
-                <Label>
+                <Label htmlfor="proficiency">
                   {proficiency === 5 ? "Beginner" : proficiency === 10 ? "Intermediate" : "Advanced"}
                 </Label>
               </div>
@@ -228,12 +230,21 @@ const SearchSkillsContainer = ({ skill }) => {
       {/* Filtered Results */}
       {
         (searchSkill.length > 0 || selectedCategory || selectedProficiency) && (
-          <div className="mt-4">
+          <div className="mt-4 grid grid-cols-3 gap-4">
             {filteredSkills?.map((filteredSkill, index) => (
-              <div key={index} className="p-2 border-b dark:border-white/20 border-gray-400">
-                <p className="text-lg font-bold">{filteredSkill.name}</p>
-                <p>Category: {filteredSkill.general_category}</p>
-                <p>Proficiency: {filteredSkill.proficiency === 5 ? "Beginner" : filteredSkill.proficiency === 10 ? "Intermediate" : "Advanced"}</p>
+              <div key={index} className="p-4 bg-[#e2fd6c] rounded-lg">
+                <p className="text-2xl font-semibold text-black">{filteredSkill.name}</p>
+                <div className="flex items-center gap-2">
+                  <span className="flex items-center gap-1">
+                    <Blocks className="text-black w-4"/>
+                    <p className="text-black capitalize">{filteredSkill.general_category}</p>
+                  </span>
+                  <Separator  orientation="vertical"/>
+                  <span className="flex items-center gap-1">
+                    <GaugeIcon className="text-black w-4" />
+                    <p className="text-black capitalize">{filteredSkill.proficiency === 5 ? "Beginner" : filteredSkill.proficiency === 10 ? "Intermediate" : "Advanced"}</p>
+                  </span>
+                </div>
               </div>
             ))}
           </div>
