@@ -38,7 +38,7 @@ export const HoverEffect = ({ items, className, onSubmit }) => {
   return (
     <div
       className={cn(
-        "grid grid-cols-1 md:grid-cols-2  lg:grid-cols-3 py-10",
+        "grid grid-cols-1 md:grid-cols-2  lg:grid-cols-3 py-4",
         className
       )}
     >
@@ -136,6 +136,7 @@ const proficiencyPoints = {
 
 const AddSkills = ({ onSubmit }) => {
   const [position, setPosition] = useState("beginner");
+  const [loading, setLoading] = useState(false); 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -144,13 +145,15 @@ const AddSkills = ({ onSubmit }) => {
     },
   });
 
-  const handleSubmit=(data)=>{
+  const handleSubmit=async(data)=>{
+    setLoading(true);
     const points= proficiencyPoints[position]
     const skillData={
       name:data.name,
       proficiency: points,
     }
-    onSubmit(skillData)
+    await onSubmit(skillData); // Ensure the onSubmit function is awaited
+    setLoading(false);
   }
   return (
     <Dialog>
@@ -213,7 +216,9 @@ const AddSkills = ({ onSubmit }) => {
             </DropdownMenu>
           </div>
           <div className="flex items-end justify-end w-full">
-            <Button type="submit">Save changes</Button>
+          <Button type="submit" disabled={loading}>
+              {loading ? "Saving..." : "Save changes"}
+            </Button>
           </div>
         </form>
       </DialogContent>

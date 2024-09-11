@@ -15,7 +15,7 @@ const NavbarMenu = ({ userData, status, className }) => {
         <></> // Show a loading state when fetching user data
       ) : userData ? (
         <div className="flex gap-12 items-center font-medium">
-          <Link href="/dashboard">Profile</Link>
+          <Link href={`/dashboard/${userData?.user.name}`}>Profile</Link>
           <Link href="/projects">Projects</Link>
           <Link href="/skills">Skills</Link>
         </div>

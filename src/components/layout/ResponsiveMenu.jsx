@@ -26,7 +26,7 @@ const ResponsiveMenu = ({ userData, status }) => {
             <Menu />
           </DropdownMenuTrigger>
         )}
-        <DropdownMenuContent className="mr-4 bg-white dark:bg-black dark:border-[#1d1d1d]">
+        <DropdownMenuContent className="absolute z-20 right-[-2rem] mr-4 bg-white dark:bg-black dark:border-[#1d1d1d]">
           {!userData ? (
             <DropdownMenuLabel>
               <Button
@@ -45,7 +45,7 @@ const ResponsiveMenu = ({ userData, status }) => {
           <DropdownMenuSeparator className="bg-[#e4e4e4] dark:bg-[#1d1d1d]" />
 
           <DropdownMenuItem className="focus:bg-[#f1f1f1] focus:dark:bg-[#000]">
-            <Link href="/dashboard">Profile</Link>
+          <Link href={`/dashboard/${userData?.user.name}`}>Profile</Link>
           </DropdownMenuItem>
           <DropdownMenuItem className="focus:bg-[#f1f1f1] focus:dark:bg-[#000]">
             <Link href="/projects">Projects</Link>
