@@ -2,13 +2,22 @@
 
 import { GlobalLoader } from '@/components/layout/GlobalLoader'
 import { Button } from '@/components/ui/button'
-import { signOut, useSession } from 'next-auth/react'
+import { SessionProvider, signOut, useSession } from 'next-auth/react'
 import Image from 'next/image'
 import React from 'react'
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar"
 
 const Dasboard = () => {
   const { data: session, status } = useSession()
-
+  
+  const getInitials = (username) => {
+    return `${username?.charAt(0) || ""}`;
+  };
+  
   if (status === "loading") {
     return <GlobalLoader loading={true} />;
   }
@@ -19,7 +28,13 @@ const Dasboard = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-end gap-2">
               <div className="border border-[#e2fd6c] rounded-full">
-                <Image className='object-cover relative w-full h-full rounded-full' src={session?.user.image} width={64} height={64} />
+                <Avatar>
+                  {/* <AvatarImage src={session?.user.image} alt={session?.user.name} /> */}
+                  <AvatarFallback>
+                  {getInitials(session?.user.name)}
+                  </AvatarFallback>
+                </Avatar>
+                {/* <Image className='object-cover relative w-full h-full rounded-full' src={session?.user.image} width={64} height={64} /> */}
               </div>
               <div className="">
                 <h1 className="text-2xl">{session?.user.name}</h1>
@@ -27,7 +42,7 @@ const Dasboard = () => {
               </div>
             </div>
           </div>
-          <Settings data={session}/>
+          <Settings data={session} />
         </div>
       </div>
     </div>
@@ -47,20 +62,20 @@ import {
 import { SettingsIcon } from 'lucide-react'
 import Link from 'next/link'
 
-const Settings = ({data}) => {
+const Settings = ({ data }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="dark:text-white text-black bg-white dark:bg-black dark:border-[#1d1d1d]">
-          <SettingsIcon className='w-[1.5rem]'/>
+          <SettingsIcon className='w-[1.5rem]' />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="absolute z-20 right-[-2.8rem] mr-4 bg-white dark:bg-black dark:border-[#1d1d1d]">
         <DropdownMenuGroup label="Account">
           <DropdownMenuItem asChild>
-          <Link href={`dashboard/${data?.user.name}/editprofile`}>
-            Edit
-          </Link>
+            <Link href={`dashboard/${data?.user.name}/editprofile`}>
+              Edit
+            </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuGroup label="Help">
