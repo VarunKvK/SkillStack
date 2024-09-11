@@ -29,7 +29,7 @@ const Dasboard = () => {
             <div className="flex items-end gap-2">
               <div className="border border-[#e2fd6c] rounded-full">
                 <Avatar>
-                  {/* <AvatarImage src={session?.user.image} alt={session?.user.name} /> */}
+                  <AvatarImage src={session?.user.image} alt={session?.user.name} />
                   <AvatarFallback>
                   {getInitials(session?.user.name)}
                   </AvatarFallback>
