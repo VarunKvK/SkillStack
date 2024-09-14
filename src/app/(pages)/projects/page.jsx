@@ -191,7 +191,13 @@ const ResultContainer = ({ data, skills }) => {
             key={index}
             className="rounded-xl flex flex-col gap-4 relative"
           >
-            <div className="w-full flex justify-between items-center z-20 relative">
+            <div className="w-[50%] flex justify-between items-center z-20 relative">
+              <div className="flex flex-col gap-.5">
+                <h2 className="opacity-50">Project Title</h2>
+                <p className="text-xl font-semibold">
+                  {s.projectInsights.projectTitle}
+                </p>
+              </div>
               <div className="flex flex-col gap-.5">
                 <h2 className="opacity-50">Project Type</h2>
                 <p className="text-xl font-semibold">

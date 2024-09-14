@@ -31,6 +31,7 @@ const LearningSchema = new mongoose.Schema({
 });
 
 const Projects = new mongoose.Schema({
+  projectTitle: { type: String, required: true },
   projectType: { type: String, required: true },
   projectPurpose: { type: String, required: true },
   technology: [TechnologySchema],

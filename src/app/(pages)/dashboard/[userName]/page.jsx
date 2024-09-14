@@ -4,7 +4,7 @@ import { GlobalLoader } from '@/components/layout/GlobalLoader'
 import { Button } from '@/components/ui/button'
 import { SessionProvider, signOut, useSession } from 'next-auth/react'
 import Image from 'next/image'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Avatar,
   AvatarFallback,
@@ -13,11 +13,40 @@ import {
 
 const Dasboard = () => {
   const { data: session, status } = useSession()
-  
+  const [skills, setSkills] = useState()
+  const [projects, setProjects] = useState()
+
   const getInitials = (username) => {
     return `${username?.charAt(0) || ""}`;
   };
-  
+
+  useEffect(() => {
+    const fetchSkills = async () => {
+      const data = await fetch("/api/skills", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      })
+      const response = await data.json()
+      setSkills(response.text)
+    }
+    fetchSkills()
+
+    const fetchProjects = async () => {
+      const data = await fetch("/api/projects", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      })
+      const response = await data.json()
+      console.log(response)
+      setProjects(response.userProjects)
+    }
+    fetchProjects()
+  }, [])
+
   if (status === "loading") {
     return <GlobalLoader loading={true} />;
   }
@@ -31,7 +60,7 @@ const Dasboard = () => {
                 <Avatar>
                   <AvatarImage src={session?.user.image} alt={session?.user.name} />
                   <AvatarFallback>
-                  {getInitials(session?.user.name)}
+                    {getInitials(session?.user.name)}
                   </AvatarFallback>
                 </Avatar>
                 {/* <Image className='object-cover relative w-full h-full rounded-full' src={session?.user.image} width={64} height={64} /> */}
@@ -43,6 +72,15 @@ const Dasboard = () => {
             </div>
           </div>
           <Settings data={session} />
+        </div>
+        <div className="flex justify-between w-full">
+          {skills &&
+            <SkillContainer skills={skills} />
+          }
+          {projects &&
+            <ProjectContainer projects={projects} />
+          }
+
         </div>
       </div>
     </div>
@@ -61,6 +99,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { SettingsIcon } from 'lucide-react'
 import Link from 'next/link'
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 const Settings = ({ data }) => {
   return (
@@ -86,5 +125,41 @@ const Settings = ({ data }) => {
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
+  )
+}
+
+const SkillContainer = ({ skills }) => {
+  return (
+    <div className="flex flex-col gap-2">
+      <h1 className="">Your skills</h1>
+      <div className="flex flex-wrap gap-1">
+        {skills.map((s, index) => (
+          <Card className="dark:bg-black bg-white dark:border-white/20 border-gray-400" key={index}>
+            <CardHeader>
+              <CardTitle className="text-md">{s.name}</CardTitle>
+              <CardDescription>{s.specific_category}</CardDescription>
+            </CardHeader>
+          </Card>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+const ProjectContainer = ({ projects }) => {
+  return (
+    <div className="flex flex-col gap-2">
+      <h1 className="">Your projects</h1>
+      <div className="flex flex-wrap gap-1">
+        {projects?.project.map((p, index) => (
+          <Card className="dark:bg-black bg-white dark:border-white/20 border-gray-400" key={index}>
+            <CardHeader>
+              <CardTitle className="text-md">{p.projectTitle}</CardTitle>
+              <CardDescription>{p.projectPurpose}</CardDescription>
+            </CardHeader>
+          </Card>
+        ))}
+      </div>
+    </div>
   )
 }

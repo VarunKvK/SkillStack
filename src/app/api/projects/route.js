@@ -1,7 +1,7 @@
 import connectToDatabase from "@/lib/mongodb";
 import { Project } from "@/models/Projects";
-import { Skill } from "@/models/Skills";
 import { User } from "@/models/User";
+import { getServerSession } from "next-auth";
 
 export async function POST(req, res) {
   const { skills, data } = await req.json();
@@ -18,6 +18,7 @@ export async function POST(req, res) {
     }
 
     const newProject = {
+      projectTitle: skills[0].projectInsights.projectTitle,
       projectType: skills[0].projectInsights.projectType,
       projectPurpose: skills[0].projectInsights.purpose,
       technology: skills[0].projectInsights.technologies,
@@ -71,5 +72,25 @@ export async function POST(req, res) {
   } catch (err) {
     console.log(err);
     return Response.json({ error: `Error connecting to the database.${err}` });
+  }
+}
+
+export async function GET(req,res){
+  try {
+    const session = await getServerSession();
+    await connectToDatabase();
+
+    const userExist = await User.findOne({ email: session.user?.email });
+    if (!userExist) {
+      return Response.json({ message: "User not found" });
+    }
+    const userProjects = await Project.findOne({ userId: userExist._id });
+    if (!userProjects) {
+      return Response.json({ message: "User projects not found" });
+    }
+    return Response.json({ message: "Success", userProjects });
+
+  }catch(err){
+    return Response.json({"message":`The error you are facing is: ${err}`})
   }
 }

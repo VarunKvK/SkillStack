@@ -28,6 +28,7 @@ export async function POST(req, res) {
     The JSON Structure should be like this:
       {
     "projectInsights": {
+      "projectTitle":"String" or if does not exist then "None" 
       "projectType": "String",
       "purpose": "String",
       "technologies": [
@@ -86,6 +87,7 @@ export async function POST(req, res) {
     const text = [
       {
         projectInsights: {
+          projectTitle:"Coinup",
           projectType: "Website",
           purpose: "Rebuild website for an animal shelter",
           technologies: [
