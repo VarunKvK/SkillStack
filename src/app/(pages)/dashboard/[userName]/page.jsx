@@ -16,6 +16,13 @@ const Dasboard = () => {
   const [skills, setSkills] = useState()
   const [projects, setProjects] = useState()
 
+  const skillData = [
+    { name: 'JavaScript', proficiency: 10 },
+    { name: 'React', proficiency: 15 },
+    { name: 'Node.js', proficiency: 10 },
+    { name: 'CSS', proficiency: 5 },
+  ];
+
   const getInitials = (username) => {
     return `${username?.charAt(0) || ""}`;
   };
@@ -80,7 +87,6 @@ const Dasboard = () => {
           {projects &&
             <ProjectContainer projects={projects} />
           }
-
         </div>
       </div>
     </div>
@@ -132,12 +138,12 @@ const SkillContainer = ({ skills }) => {
   return (
     <div className="flex flex-col gap-2">
       <h1 className="">Your skills</h1>
-      <div className="flex flex-wrap gap-1">
+      <div className="flex flex-wrap gap-2">
         {skills.map((s, index) => (
-          <Card className="dark:bg-black bg-white dark:border-white/20 border-gray-400" key={index}>
+          <Card className="dark:bg-black bg-white dark:border-white/20 border-[#e2fd6c]" key={index}>
             <CardHeader>
-              <CardTitle className="text-md">{s.name}</CardTitle>
-              <CardDescription>{s.specific_category}</CardDescription>
+              <CardTitle className="text-md dark:text-[#e2fd6c]">{s.name}</CardTitle>
+              <CardDescription className="text-gray-400">{s.specific_category}</CardDescription>
             </CardHeader>
           </Card>
         ))}
@@ -150,12 +156,12 @@ const ProjectContainer = ({ projects }) => {
   return (
     <div className="flex flex-col gap-2">
       <h1 className="">Your projects</h1>
-      <div className="flex flex-wrap gap-1">
+      <div className="flex flex-wrap gap-2">
         {projects?.project.map((p, index) => (
-          <Card className="dark:bg-black bg-white dark:border-white/20 border-gray-400" key={index}>
+          <Card className="dark:bg-black bg-white dark:border-white/20 border-[#e2fd6c]" key={index}>
             <CardHeader>
-              <CardTitle className="text-md">{p.projectTitle}</CardTitle>
-              <CardDescription>{p.projectPurpose}</CardDescription>
+              <CardTitle className="text-md dark:text-[#e2fd6c]">{p.projectTitle}</CardTitle>
+              <CardDescription className="text-gray-400">{p.projectPurpose}</CardDescription>
             </CardHeader>
           </Card>
         ))}
