@@ -34,6 +34,7 @@ export async function GET(req, res) {
   //   _id:'Integer',
   //     name: 'String',
   //     proficiency: Number,
+  //     proficiencyPercentage:Number,
   //     general_category:"String",
   //     specific_category:"String"
   //   }
@@ -51,7 +52,8 @@ export async function GET(req, res) {
       {
         _id: "66d2bd9d4699e94cb482a0ef",
         name: "Website Development",
-        proficiency: 10,
+        proficiency: 5,
+        proficiencyPercentage:50,
         general_category: "Soft Skills",
         specific_category: "Web Development",
       },
@@ -59,20 +61,39 @@ export async function GET(req, res) {
         _id: "66d2bd9d4699e94cb482a0f0",
         name: "Web Design",
         proficiency: 10,
+        proficiencyPercentage:26,
         general_category: "Development",
         specific_category: "Web Design",
       },
       {
         _id: "66d2bd9d4699e94cb482a0f1",
         name: "Theme Customization",
-        proficiency: 10,
+        proficiency: 15,
+        proficiencyPercentage:36,
         general_category: "Development",
         specific_category: "Web Development",
       },
       {
         _id: "66d2bd9d4699e94cb482a0f2",
         name: "API Integration",
-        proficiency: 10,
+        proficiency: 20,
+        proficiencyPercentage:16,
+        general_category: "Development",
+        specific_category: "Backend Development",
+      },
+      {
+        _id: "66d2bd9d4699e94cb482a0f2",
+        name: "Marketing",
+        proficiency: 20,
+        proficiencyPercentage:76,
+        general_category: "Development",
+        specific_category: "Backend Development",
+      },
+      {
+        _id: "66d2bd9d4699e94cb482a0f2",
+        name: "Sales",
+        proficiency: 25,
+        proficiencyPercentage:86,
         general_category: "Development",
         specific_category: "Backend Development",
       },
@@ -96,10 +117,15 @@ export async function POST(req, res) {
       return Response.json({ message: "User not found" });
     }
 
+    const maxProficiency = 15;
+
+    const proficiencyPercentage = (values.proficiency / maxProficiency) * 100;
+
     const userSkill=await Skill.findOne({userId:userExist._id})
     userSkill.skills.push({
       name:values.name,
-      proficiency:values.proficiency
+      proficiency:values.proficiency,
+      proficiencyPercentage:proficiencyPercentage
     })
     await userSkill.save()
     return Response.json({ message: "Success" });
@@ -110,6 +136,3 @@ export async function POST(req, res) {
     });
   }
 }
-
-
-//Need to look into the issue of what information needs to be saved into the database to get the correct result.

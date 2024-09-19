@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const skillsIdentified = new mongoose.Schema({
   name: { type: String, required: true },
   proficiency: { type: Number, required: true, min: 0, max: 100 },
+  proficiencyPercentage: { type: Number, required: true, min: 0, max: 100 }
 });
 
 const skillSchema = new mongoose.Schema({

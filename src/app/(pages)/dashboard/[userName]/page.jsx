@@ -10,18 +10,12 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar"
+import { BarGraphs } from "@/components/charts/BarGraphs"
 
 const Dasboard = () => {
   const { data: session, status } = useSession()
   const [skills, setSkills] = useState()
   const [projects, setProjects] = useState()
-
-  const skillData = [
-    { name: 'JavaScript', proficiency: 10 },
-    { name: 'React', proficiency: 15 },
-    { name: 'Node.js', proficiency: 10 },
-    { name: 'CSS', proficiency: 5 },
-  ];
 
   const getInitials = (username) => {
     return `${username?.charAt(0) || ""}`;
@@ -88,6 +82,7 @@ const Dasboard = () => {
             <ProjectContainer projects={projects} />
           }
         </div>
+        {skills && <BarGraphs skills={skills} />}
       </div>
     </div>
   )

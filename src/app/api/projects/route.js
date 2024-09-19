@@ -1,5 +1,6 @@
 import connectToDatabase from "@/lib/mongodb";
 import { Project } from "@/models/Projects";
+import { Skill } from "@/models/Skills";
 import { User } from "@/models/User";
 import { getServerSession } from "next-auth";
 
@@ -42,6 +43,7 @@ export async function POST(req, res) {
 
     // Handle skills
     const existingSkillsDoc = await Skill.findOne({ userId: userExists.id });
+    const maxProficiency = 15;
 
     if (existingSkillsDoc) {
       for (let skill of skills[0].projectInsights.skills) {
@@ -49,11 +51,18 @@ export async function POST(req, res) {
           (s) => s.name === skill.name
         );
         if (existingSkill) {
-          existingSkill.proficiency += 5; // Increment proficiency
+          existingSkill.proficiency = Math.min(
+            existingSkill.proficiency + 5,
+            maxProficiency
+          );
+          existingSkill.proficiencyPercentage =
+            (existingSkill.proficiency / maxProficiency) * 100;
         } else {
+          const initialProficiency = 10;
           existingSkillsDoc.skills.push({
             name: skill.name,
-            proficiency: 10,
+            proficiency: initialProficiency,
+            proficiencyPercentage: (initialProficiency / maxProficiency) * 100,
           });
         }
       }
@@ -61,10 +70,14 @@ export async function POST(req, res) {
     } else {
       await Skill.create({
         userId: userExists.id,
-        skills: skills[0].projectInsights.skills.map((skill) => ({
-          name: skill.name,
-          proficiency: 10,
-        })),
+        skills: skills[0].projectInsights.skills.map((skill) => {
+          const initialProficiency = 10;
+          return {
+            name: skill.name,
+            proficiency: initialProficiency,
+            proficiencyPercentage: (initialProficiency / maxProficiency) * 100,
+          };
+        }),
       });
     }
 
@@ -75,7 +88,7 @@ export async function POST(req, res) {
   }
 }
 
-export async function GET(req,res){
+export async function GET(req, res) {
   try {
     const session = await getServerSession();
     await connectToDatabase();
@@ -89,8 +102,7 @@ export async function GET(req,res){
       return Response.json({ message: "User projects not found" });
     }
     return Response.json({ message: "Success", userProjects });
-
-  }catch(err){
-    return Response.json({"message":`The error you are facing is: ${err}`})
+  } catch (err) {
+    return Response.json({ message: `The error you are facing is: ${err}` });
   }
 }
