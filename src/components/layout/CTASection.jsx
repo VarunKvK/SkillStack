@@ -28,7 +28,7 @@ const CTA = ({ title, session }) => {
           </p>
         </div>
         <Link
-          href={session ? "/":"/signin"}
+          href={session ? "/projects":"/signin"}
           className="relative inline-flex h-12 overflow-hidden rounded-lg p-[1px]"
         >
           <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#000_0%,#9afd6c_30%,#d6ff1e_100%)]" />
