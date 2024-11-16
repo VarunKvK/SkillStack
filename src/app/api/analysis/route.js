@@ -81,79 +81,79 @@ export async function POST(req, res) {
     It should not contain the context of array and nothing else.Start with the array and end with array.
   `;
 
-    // const result = await model.generateContent(prompt);
-    // const response = await result.response;
-    // const text = response.text();
-    const text = [
-      {
-        projectInsights: {
-          projectTitle:"Coinup",
-          projectType: "Website",
-          purpose: "Rebuild website for an animal shelter",
-          technologies: [
-            {
-              name: "WordPress",
-              confidence: 1,
-            },
-          ],
-          skills: [
-            {
-              name: "Website Development",
-              confidence: 1,
-            },
-            {
-              name: "Web Design",
-              confidence: 1,
-            },
-            {
-              name: "Theme Customization",
-              confidence: 1,
-            },
-            {
-              name: "API Integration",
-              confidence: 1,
-            },
-          ],
-          challenges: [
-            {
-              description: "Integrating Instagram feed",
-              confidence: 1,
-            },
-          ],
-          features: [
-            {
-              name: "Donation Button",
-              confidence: 1,
-            },
-            {
-              name: "Adoption Application Form",
-              confidence: 1,
-            },
-            {
-              name: "Instagram Feed Integration",
-              confidence: 1,
-            },
-          ],
-          outcomes: [
-            {
-              description: "30% increase in adoption inquiries",
-              confidence: 1,
-            },
-            {
-              description: "Increased donations",
-              confidence: 1,
-            },
-          ],
-          learnings: [
-            {
-              description: "API Integration",
-              confidence: 1,
-            },
-          ],
-          overallConfidence: 1,
-        },
-      },
-    ];
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+    // const text = [
+    //   {
+    //     projectInsights: {
+    //       projectTitle:"Coinup",
+    //       projectType: "Website",
+    //       purpose: "Rebuild website for an animal shelter",
+    //       technologies: [
+    //         {
+    //           name: "WordPress",
+    //           confidence: 1,
+    //         },
+    //       ],
+    //       skills: [
+    //         {
+    //           name: "Website Development",
+    //           confidence: 1,
+    //         },
+    //         {
+    //           name: "Web Design",
+    //           confidence: 1,
+    //         },
+    //         {
+    //           name: "Theme Customization",
+    //           confidence: 1,
+    //         },
+    //         {
+    //           name: "API Integration",
+    //           confidence: 1,
+    //         },
+    //       ],
+    //       challenges: [
+    //         {
+    //           description: "Integrating Instagram feed",
+    //           confidence: 1,
+    //         },
+    //       ],
+    //       features: [
+    //         {
+    //           name: "Donation Button",
+    //           confidence: 1,
+    //         },
+    //         {
+    //           name: "Adoption Application Form",
+    //           confidence: 1,
+    //         },
+    //         {
+    //           name: "Instagram Feed Integration",
+    //           confidence: 1,
+    //         },
+    //       ],
+    //       outcomes: [
+    //         {
+    //           description: "30% increase in adoption inquiries",
+    //           confidence: 1,
+    //         },
+    //         {
+    //           description: "Increased donations",
+    //           confidence: 1,
+    //         },
+    //       ],
+    //       learnings: [
+    //         {
+    //           description: "API Integration",
+    //           confidence: 1,
+    //         },
+    //       ],
+    //       overallConfidence: 1,
+    //     },
+    //   },
+    // ];
 
     return Response.json({ message: "Success", text });
   } catch (e) {
