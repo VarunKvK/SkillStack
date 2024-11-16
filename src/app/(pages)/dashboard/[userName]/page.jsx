@@ -11,6 +11,7 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar"
 import { BarGraphs } from "@/components/charts/BarGraphs"
+import {DownloadGraphBtn} from "@/components/layout/DownloadGraphBtn"
 
 const Dasboard = () => {
   const { data: session, status } = useSession()
@@ -48,7 +49,7 @@ const Dasboard = () => {
     fetchProjects()
   }, [])
 
-  if (status === "loading") {
+  if (status === "loading" && skills) {
     return <GlobalLoader loading={true} />;
   }
   return (
@@ -64,7 +65,6 @@ const Dasboard = () => {
                     {getInitials(session?.user.name)}
                   </AvatarFallback>
                 </Avatar>
-                {/* <Image className='object-cover relative w-full h-full rounded-full' src={session?.user.image} width={64} height={64} /> */}
               </div>
               <div className="">
                 <h1 className="text-2xl">{session?.user.name}</h1>
@@ -82,7 +82,12 @@ const Dasboard = () => {
             <ProjectContainer projects={projects} />
           }
         </div>
-        {skills && <BarGraphs skills={skills} />}
+        {skills && (
+          <div className="flex">
+            <BarGraphs skills={skills} id={"bargraph"}/>
+            {/* <DownloadGraphBtn chartId={"bargraph"} className="absolute"/> */}
+          </div>)
+        }
       </div>
     </div>
   )
